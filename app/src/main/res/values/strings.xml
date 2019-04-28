@@ -1,3 +1,70 @@
 <resources>
     <string name="app_name">TurboDrive</string>
+    <string name="chooser_title">Select a file</string>
+    <string name="choose_file">Select a file</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="empty_directory">Empty Directory</string>
+    <string name="storage_removed">Storage was removed or unmounted.</string>
+    <string name="error_selecting_file">Error selecting File</string>
+    <string name="image">image</string>
+    <string name="profile">Profile</string>
+    <string name="posts">Your Posts</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+    <string name="logout">Log out</string>
+    <string name="add_image">Add Image</string>
+    <string name="select_month">Select Month</string>
+    <string name="mess_rent">Rent</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="location">Location</string>
+    <string name="category">Category</string>
+    <string name="submit_post">Submit Post</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Log In</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="recover_password">Recover Password</string>
+    <string name="don_t_have_an_account">Don\'t have an Account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="search_title">Search for ads...</string>
+    <string name="search_hint">Search for ads...</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="error">A problem occurred!</string>
+    <string name="select_room_for">Select Room For</string>
+    <string name="post_ad">Post Ad</string>
+    <string name="remove_ad">Delete</string>
+    <string name="delete_card_confirmation_title">Delete</string>
+    <string name="delete_card_confirmation_message">Are you sure to delete this ad?</string>
+    <string name="delete">delete</string>
+    <string name="cancel">cancel</string>
+    <string name="enter_your_account_email">Enter the email associated with the account</string>
+    <string name="send_recovery_email">send recovery email</string>
+    <string name="recovery_success">A recovery email has been sent to your email address</string>
+    <string name="back_to_homepage">Back to homepage</string>
+    <string-array name="category">
+        <item>Mess</item>
+        <item>Hostel</item>
+        <item>Flat</item>
+        <item>Sub-Let</item>
+    </string-array>
+    <string-array name="room_for">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Family</item>
+    </string-array>
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
 </resources>

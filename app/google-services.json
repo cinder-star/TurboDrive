@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "960192937721",
+    "firebase_url": "https://turbo-drive.firebaseio.com",
+    "project_id": "turbo-drive",
+    "storage_bucket": "turbo-drive.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960192937721:android:f256c799d1df8a10",
+        "android_client_info": {
+          "package_name": "com.sihan.turbodrive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "960192937721-rcr8r1f2v1hu1ub4jn7hrqfc21pv75i2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sihan.turbodrive",
+            "certificate_hash": "565d0662ea4ccf34a2ff831b5ad0276be0884c9c"
+          }
+        },
+        {
+          "client_id": "960192937721-7e4r4r71guc6lhqe58k6ai6ateo5ief3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRtEYdqpAS1Jy99rDSSFU17aBoBciteQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "960192937721-7e4r4r71guc6lhqe58k6ai6ateo5ief3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
