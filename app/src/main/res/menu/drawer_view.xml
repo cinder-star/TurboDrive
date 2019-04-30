@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/profile"
+            android:icon="@drawable/round_person"
+            android:title="@string/profile"/>
+        <item android:id="@+id/add_file"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="@string/add_file"/>
+        <item android:id="@+id/download_file"
+            android:icon="@drawable/download"
+            android:title="@string/download_file"/>
+        <item android:id="@+id/contacts"
+            android:icon="@android:drawable/ic_menu_my_calendar"
+            android:title="@string/contacts"/>
+    </group>
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/log_out"
+            android:icon="@drawable/logout"
+            android:title="@string/logout"/>
+    </group>
+
+</menu>

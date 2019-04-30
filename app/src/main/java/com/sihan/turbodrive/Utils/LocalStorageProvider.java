@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class LocalStorageProvider extends DocumentsProvider {
 
-    public static final String AUTHORITY = "com.nsu.localstorage.documents";
+    public static final String AUTHORITY = "com.sihan.localstorage.documents";
 
     /**
      * Default root projection: everything but Root.COLUMN_MIME_TYPES

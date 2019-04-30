@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             progressDialog.dismiss();
-
+                            startActivity(new Intent(LoginActivity.this,DriveActivity.class));
                         }
                         else{
                             Toast.makeText(LoginActivity.this,getString(R.string.error),Toast.LENGTH_LONG)

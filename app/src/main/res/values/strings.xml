@@ -42,6 +42,9 @@
     <string name="send_recovery_email">send recovery email</string>
     <string name="recovery_success">A recovery email has been sent to your email address</string>
     <string name="back_to_homepage">Back to homepage</string>
+    <string name="add_file">Upload File</string>
+    <string name="contacts">Contacts</string>
+    <string name="download_file">Download file</string>
     <string-array name="category">
         <item>Mess</item>
         <item>Hostel</item>
