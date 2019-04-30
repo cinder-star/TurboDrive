@@ -1,9 +1,6 @@
 package com.sihan.turbodrive.Activities;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,23 +8,28 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.sihan.turbodrive.Domain.File;
 import com.sihan.turbodrive.R;
-import com.sihan.turbodrive.Utils.FileUtils;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class DriveActivity extends AppCompatActivity {
@@ -37,20 +39,22 @@ public class DriveActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private NavigationView nvDrawer;
     private FirebaseUser firebaseUser;
-    private final String ROOT = "/sihan/";
-    private static final String TAG = "DriveActivity";
-    private String filename;
-    private Uri fileUri;
+    private String ROOT = "/sihan";
+    private String current_directory = "/sihan";
+    private List<File> files = new ArrayList<>();
+    private RecyclerView filesRecyclerView;
 
-    private static final int REQUEST_CODE = 6384;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drive);
         setTitle("Drive");
+        ROOT = "/"+FirebaseAuth.getInstance().getUid();
+        current_directory = "/"+FirebaseAuth.getInstance().getUid();
         bindWidgets();
         setupDrawerContent(nvDrawer);
+        prepareListView();
     }
 
     private void bindWidgets() {
@@ -103,10 +107,10 @@ public class DriveActivity extends AppCompatActivity {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         switch(menuItem.getItemId()) {
             case R.id.profile:
-
+                startActivity(new Intent(DriveActivity.this,ProfileActivity.class));
                 break;
             case R.id.add_file:
-                uploadFile();
+                startActivity(new Intent(DriveActivity.this,UploadFileActivity.class).putExtra("directory",current_directory));
                 break;
             case R.id.download_file:
 
@@ -115,7 +119,8 @@ public class DriveActivity extends AppCompatActivity {
 
                 break;
             case R.id.log_out:
-
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(DriveActivity.this,LoginActivity.class));
                 break;
             default:
         }
@@ -123,66 +128,118 @@ public class DriveActivity extends AppCompatActivity {
         mDrawer.closeDrawers();
     }
 
-    private void uploadFile(){
-        showChooser();
-//        StorageReference storageReference = FirebaseStorage.getInstance().getReference(ROOT);
-//        StorageReference imageReference = storageReference.child(filename);
-//        UploadTask uploadTask = imageReference.putFile(fileUri);
-//        uploadTask.addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(DriveActivity.this,"Failed Uploading file",Toast.LENGTH_LONG).show();
-//            }
-//        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                Toast.makeText(DriveActivity.this,"File uploading successful",Toast.LENGTH_LONG).show();
-//            }
-//        });
-    }
-
-    private void showChooser() {
-        // Use the GET_CONTENT intent from the utility class
-        Intent target = FileUtils.createGetContentIntent();
-        // Create the chooser Intent
-        Intent intent = Intent.createChooser(
-                target, getString(R.string.chooser_title));
-        try {
-            startActivityForResult(intent, REQUEST_CODE);
-        } catch (ActivityNotFoundException e) {
-            // The reason for the existence of aFileChooser
+    @Override
+    public void onBackPressed() {
+        if(ROOT.equals(current_directory)){
+            finishAffinity();
+        }
+        else{
+            current_directory = current_directory.substring(current_directory.lastIndexOf('/')-1);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE:
-                // If the file selection was successful
-                if (resultCode == RESULT_OK) {
-                    if (data != null) {
-                        // Get the URI of the selected file
-                        final Uri uri = data.getData();
-                        assert uri != null;
-                        Log.i(TAG, "Uri = " + uri.toString());
-                        try {
-                            // Get the file path from the URI
-                            fileUri =uri;
-                            Cursor cursor = this.getContentResolver().query(uri, new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }, null, null, null);
-                            cursor.moveToFirst();
-                            filename = cursor.getString(0);
-                            cursor.close();
-                            int slashIndex = filename.lastIndexOf('/');
-                            filename = filename.substring(slashIndex+1);
-                            Toast.makeText(DriveActivity.this,filename,Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            Log.e("FileSelectorTest", "File select error", e);
-                        }
-                    }
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onStart() {
+        super.onStart();
+        retrieveFiles();
     }
 
+    private void retrieveFiles() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("/user/path"+current_directory);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                files.clear();
+                for(DataSnapshot ds: dataSnapshot.getChildren()) {
+                    File file = ds.getValue(File.class);
+                    assert file != null;
+                    //Log.e("----NOTIFICATION--->>>", notification.toString());
+                    files.add(file);
+                }
+                FileListAdapter fileListAdapter = (FileListAdapter) filesRecyclerView.getAdapter();
+                assert fileListAdapter != null;
+                fileListAdapter.setNotifications(files);
+                fileListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void prepareListView() {
+        filesRecyclerView = findViewById(R.id.file_list);
+        filesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        retrieveFiles();
+        filesRecyclerView.setAdapter(new FileListAdapter(files));
+    }
+
+    private class FileListAdapter extends RecyclerView.Adapter<FileListItemViewHolder>{
+        private List<File> files;
+
+        FileListAdapter(List<File> files){
+            this.files = files;
+        }
+        public void setNotifications(List<File> files){
+            this.files = files;
+        }
+
+        @Override
+        public int getItemCount(){
+            return files.size();
+        }
+
+        @NonNull
+        @Override
+        public FileListItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(DriveActivity.this).inflate(R.layout.row_file_list,viewGroup,false);
+
+            return new FileListItemViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull FileListItemViewHolder fileListItemViewHolder, int i) {
+
+            final File file  = files.get(i);
+
+            fileListItemViewHolder.filename.setText(file.getName());
+            fileListItemViewHolder.image.setImageDrawable(getDrawable(draw(file)));
+
+            fileListItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(file.getType().equals("folder")){
+                        current_directory = current_directory+"/"+file.getName();
+                        retrieveFiles();
+                    }
+                }
+            });
+        }
+    }
+
+    private int draw(File file){
+        if(file.getType().equals("folder")) return R.drawable.folder_icon;
+        else if(file.getName().endsWith(".java")) return R.drawable.java_icon;
+        else if(file.getName().endsWith("js")) return R.drawable.javascript_icon;
+        else if(file.getName().endsWith(".jpg")||file.getName().endsWith(".png")) return R.drawable.image_icon;
+        else if(file.getName().endsWith(".docx")) return R.drawable.doc_icon;
+        else if(file.getName().endsWith(".c")) return R.drawable.c_icon;
+        else if(file.getName().endsWith(".mp3")) return R.drawable.mp3_icon;
+        else if(file.getName().endsWith(".mp4")) return R.drawable.mp4_icon;
+        else if(file.getName().endsWith(".pdf")) return R.drawable.pdf_icon;
+        return R.drawable.unknown_icon;
+    }
+
+    private class FileListItemViewHolder extends RecyclerView.ViewHolder{
+        private TextView filename;
+        private ImageView image;
+
+        FileListItemViewHolder(@NonNull View view){
+            super(view);
+            filename = view.findViewById(R.id.file_name);
+            image = view.findViewById(R.id.image_view);
+        }
+    }
 }

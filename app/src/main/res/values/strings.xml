@@ -45,6 +45,8 @@
     <string name="add_file">Upload File</string>
     <string name="contacts">Contacts</string>
     <string name="download_file">Download file</string>
+    <string name="empty">Empty</string>
+    <string name="upload_file">Upload File</string>
     <string-array name="category">
         <item>Mess</item>
         <item>Hostel</item>

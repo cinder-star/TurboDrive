@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Activities.UploadFileActivity"></activity>
+        <activity android:name=".Activities.ProfileActivity"></activity>
+        <activity android:name=".Activities.UploadFileActivity" />
         <activity
             android:name=".Activities.DriveActivity"
             android:theme="@style/NoBar"
